@@ -145,6 +145,10 @@ ENV SAFETENSORS_FAST_GPU=1
 # Performance environment variable.
 ENV HIP_FORCE_DEV_KERNARG=1
 
+# Change the default to match upstream triton
+# https://github.com/triton-lang/triton/blob/main/python/triton/knobs.py#L505
+ENV AMDGCN_USE_BUFFER_OPS=1
+
 # Workaround for ROCm profiler limits
 RUN echo "ROCTRACER_MAX_EVENTS=10000000" > /app/libkineto.conf
 ENV KINETO_CONFIG="/app/libkineto.conf"
