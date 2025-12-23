@@ -362,23 +362,10 @@ class W8A8BlockFp8LinearOp:
 
         n, k = weight.shape
 
-        use_triton = (
-            not current_platform.is_fp8_fnuz()
-            and rocm_aiter_ops.is_triton_gemm_w8a8_tuned(n, k)
-        )
-
-        if use_triton:
-            gemm_a8w8_blockscale_op = rocm_aiter_ops.triton_gemm_a8w8_blockscale
-        else:
-            gemm_a8w8_blockscale_op = rocm_aiter_ops.gemm_a8w8_blockscale
+        gemm_a8w8_blockscale_op = rocm_aiter_ops.gemm_a8w8_blockscale
 
         if input_scale is not None:
             q_input = input_2d
-        elif use_triton:
-            q_input, input_scale = torch.ops.vllm.triton_per_token_group_quant_fp8(
-                input_2d,
-                self.act_quant_group_shape.col,
-            )
         else:
             q_input, input_scale = rocm_aiter_ops.group_fp8_quant(
                 input_2d, self.act_quant_group_shape.col
